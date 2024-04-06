@@ -1,18 +1,36 @@
-const groups = [
+const groupsDB = [
   {
     id: 1,
-    name: 'group 1',
-    color: ' #fffff',
+    name: 'Group # 1',
+    color: ' #A65293',
   },
   {
     id: 2,
-    name: 'group 2',
-    color: ' #fffff',
+    name: 'Group # 2',
+    color: ' #4F80A4',
   },
 ];
 
-const getGroupsService = () => {
-  return groups;
+const expenses = [
+  {
+    id_group: 1,
+    participants_id: [],
+    cost: 5000,
+  },
+];
+
+const getGroups = () => {
+  return groupsDB;
 };
 
-export default getGroupsService;
+const createGroup = (groupToCreate) => {
+  groupsDB.push({
+    name: groupToCreate.name,
+    color: groupToCreate.color,
+  });
+  return groupToCreate;
+};
+
+const getGroup = (group) => {};
+
+export default { getGroups, createGroup };
