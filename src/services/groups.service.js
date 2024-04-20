@@ -1,3 +1,5 @@
+import { Model } from '../lib/model.js';
+
 const groupsDB = [
   {
     id: 1,
@@ -11,26 +13,26 @@ const groupsDB = [
   },
 ];
 
-const expenses = [
-  {
-    id_group: 1,
-    participants_id: [],
-    cost: 5000,
-  },
-];
+const GroupsService = () => {
+  const groupsModel = Model();
 
-const getGroups = () => {
-  return groupsDB;
+  const getGroups = () => {
+    return groupsModel.getGroups();
+  };
+
+  const createGroup = (groupToCreate) => {
+    groupsDB.push({
+      name: groupToCreate.name,
+      color: groupToCreate.color,
+    });
+
+    return groupsModel.createGroup(groupToCreate);
+  };
+
+  return {
+    getGroups,
+    createGroup,
+  };
 };
 
-const createGroup = (groupToCreate) => {
-  groupsDB.push({
-    name: groupToCreate.name,
-    color: groupToCreate.color,
-  });
-  return groupToCreate;
-};
-
-const getGroup = (group) => {};
-
-export default { getGroups, createGroup };
+export { GroupsService };
