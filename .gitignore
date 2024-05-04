@@ -1,1 +1,18 @@
+
+# Dependency directories
 node_modules/
+# Environment variables file (if using dotenv or similar)
+.env
+# IDE or editor specific files
+.vscode/
+# macOS specific files
+.DS_Store
+# Log files
+*.log
+npm-debug.log*
+# Ignore lock files
+package-lock.json
+yarn.lock
+# Ignore dist directories or built output
+dist/
+build/

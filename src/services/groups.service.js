@@ -1,17 +1,4 @@
-import { Model } from '../lib/model.js';
-
-const groupsDB = [
-  {
-    id: 1,
-    name: 'Group # 1',
-    color: ' #A65293',
-  },
-  {
-    id: 2,
-    name: 'Group # 2',
-    color: ' #4F80A4',
-  },
-];
+import { Model } from "../lib/model.js";
 
 const GroupsService = () => {
   const groupsModel = Model();
@@ -20,18 +7,24 @@ const GroupsService = () => {
     return groupsModel.getGroups();
   };
 
-  const createGroup = (groupToCreate) => {
-    groupsDB.push({
-      name: groupToCreate.name,
-      color: groupToCreate.color,
-    });
+  const createGroup = async (newGroup) => {
+    const createdGroup = await groupsModel.createGroup(newGroup);
+    return {
+      newGroup: createdGroup,
+      success: true,
+      message: "Group created successfully",
+      code: 201,
+    };
+  };
 
-    return groupsModel.createGroup(groupToCreate);
+  const getById = (id) => {
+    return groupsModel.getById(id);
   };
 
   return {
     getGroups,
     createGroup,
+    getById,
   };
 };
 
