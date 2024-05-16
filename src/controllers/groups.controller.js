@@ -12,6 +12,13 @@ const GroupsController = () => {
 
   const getById = async (req, res) => {
     const group = await groupsService.getById(req.params.id);
+
+    if (!group) {
+      return res
+        .status(404)
+        .json({ message: `Group with id ${req.params.id} does not exist` });
+    }
+
     return res.status(200).json({
       group,
     });
@@ -19,8 +26,36 @@ const GroupsController = () => {
 
   const createGroup = async (req, res) => {
     const { name, color } = req.body;
-    // validations ---
-    //
+    // validations -------
+    if (!name || !color) {
+      return res.status(400).json({ message: "the field is missing" });
+    }
+
+    if (typeof name != "string") {
+      return res.status(400).json({
+        message: "the field should be a string",
+      });
+    }
+
+    if (!name.trim()) {
+      return res.status(400).json({
+        message: "the field can not be  empty",
+      });
+    }
+
+    if (typeof color != "string") {
+      return res.status(400).json({
+        message: "the field should be a string",
+      });
+    }
+
+    if (!color.trim()) {
+      return res.status(400).json({
+        message: "the field can not be  empty",
+      });
+    }
+
+    //-----------------------------
 
     const sanitizedBody = {
       name: name.trim(),
@@ -38,10 +73,23 @@ const GroupsController = () => {
     }
   };
 
+  const deleteById = async (req, res) => {
+    const removed = await groupsService.deleteById(req.params.id);
+
+    if (removed) {
+      return res.status(204).send();
+    }
+
+    return res.status(404).json({
+      message: `Group with id ${req.params.id} does not exist`,
+    });
+  };
+
   return {
     getGroups,
     createGroup,
     getById,
+    deleteById,
   };
 };
 

@@ -8,6 +8,7 @@ const GroupRouter = () => {
     router.get("/", groupsController.getGroups);
     router.get("/:id", groupsController.getById);
     router.post("/", groupsController.createGroup);
+    router.delete("/:id", groupsController.deleteById);
     return router;
   };
   return {
