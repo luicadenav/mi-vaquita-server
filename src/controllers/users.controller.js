@@ -10,8 +10,14 @@ const UsersController = () => {
     });
   };
 
+  const createUser = async (req, res) => {
+    const createdUser = await usersService.createUser(req.body);
+    return res.status(200).json(createdUser);
+  };
+
   return {
     getUsers,
+    createUser,
   };
 };
 export { UsersController };
