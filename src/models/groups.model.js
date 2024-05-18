@@ -1,4 +1,4 @@
-import connection from "./connection.js";
+import connection from "../lib/connection.js";
 
 const Model = () => {
   const getGroups = async () => {

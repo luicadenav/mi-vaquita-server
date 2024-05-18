@@ -1,4 +1,4 @@
-import { Model } from "../lib/model.js";
+import { Model } from "../models/groups.model.js";
 
 const GroupsService = () => {
   const groupsModel = Model();
