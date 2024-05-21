@@ -85,11 +85,22 @@ const GroupsController = () => {
     });
   };
 
+  const updateGroup = async (req, res) => {
+    const removed = await groupsService.updateGroup(req.params.id, req.body);
+
+    if (removed) {
+      return res.status(200).json({ removed });
+    } else {
+      return res.status(402).json({ message: `an error ocurred` });
+    }
+  };
+
   return {
     getGroups,
     createGroup,
     getById,
     deleteById,
+    updateGroup,
   };
 };
 

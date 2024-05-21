@@ -43,12 +43,22 @@ const Model = () => {
     return res.rowCount >= 1;
   };
 
+  const updateGroup = async (id, value) => {
+    const client = await connection.connect();
+    const res = await client.query(
+      "UPDATE groups SET name = $1 , color = $2 WHERE id = $3 RETURNING *",
+      [value.name, value.color, id]
+    );
+    return res.rows[0];
+  };
+
   return {
     getGroups,
     createGroup,
     getById,
     findByName,
     deleteById,
+    updateGroup,
   };
 };
 

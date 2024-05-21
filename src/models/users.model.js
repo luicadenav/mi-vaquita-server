@@ -9,6 +9,23 @@ const UsersModel = () => {
     return res.rows;
   };
 
+  const getUserById = async (id) => {
+    const client = await connection.connect();
+    const res = await client.query("SELECT * FROM users WHERE  id = $1", [id]);
+    client.release();
+    return res.rows[0];
+  };
+
+  const findUserByEmail = async (email) => {
+    const client = await connection.connect();
+    const res = await client.query("SELECT * FROM users WHERE  email = $1", [
+      email,
+    ]);
+
+    client.release();
+    return res.rows[0];
+  };
+
   const createUser = async (newUser) => {
     const client = await connection.connect();
     const { name, email, password } = newUser;
@@ -20,9 +37,31 @@ const UsersModel = () => {
     return res[0];
   };
 
+  const deleteUserById = async (id) => {
+    const client = await connection.connect();
+    const res = await client.query("DELETE FROM users WHERE id = $1", [id]);
+    client.release();
+    return res.rowCount >= 1;
+  };
+
+  const editUserById = async (id, value) => {
+    const client = await connection.connect();
+    const res = await client.query(
+      "UPDATE users SET name = $1 , password = $2 WHERE id =  $3 RETURNING * ",
+      [value.name, value.password, id]
+    );
+    console.log("🚀 ~ editUserById ~ res:", res);
+    client.release();
+    return res.rows[0];
+  };
+
   return {
     getUsers,
     createUser,
+    getUserById,
+    findUserByEmail,
+    deleteUserById,
+    editUserById,
   };
 };
 export { UsersModel };

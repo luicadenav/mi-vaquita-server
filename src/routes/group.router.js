@@ -9,6 +9,7 @@ const GroupRouter = () => {
     router.get("/:id", groupsController.getById);
     router.post("/", groupsController.createGroup);
     router.delete("/:id", groupsController.deleteById);
+    router.put("/:id", groupsController.updateGroup);
     return router;
   };
   return {

@@ -48,11 +48,15 @@ const GroupsService = () => {
     return groupsModel.deleteById(id);
   };
 
+  const updateGroup = (id, value) => {
+    return groupsModel.updateGroup(id, value);
+  };
   return {
     getGroups,
     createGroup,
     getById,
     deleteById,
+    updateGroup,
   };
 };
 
