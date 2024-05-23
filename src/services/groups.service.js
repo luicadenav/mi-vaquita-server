@@ -1,4 +1,6 @@
 import { Model } from "../models/groups.model.js";
+import ConflictException from "../exceptions/conflict.exception.js";
+import NotFoundException from "../exceptions/not-found.exception.js";
 
 const GroupsService = () => {
   const groupsModel = Model();
@@ -7,50 +9,32 @@ const GroupsService = () => {
     return groupsModel.getGroups();
   };
 
-  const createGroup = async (newGroup) => {
-    const groupFound = await groupsModel.findByName(newGroup.name);
-
-    const { name } = newGroup;
-
-    if (name.length > 30) {
-      return {
-        newGroup: null,
-        success: false,
-        message: "The group name must be fewer than 30 characters.",
-        code: 400,
-      };
-    }
-
-    if (groupFound) {
-      return {
-        newGroup: null,
-        success: false,
-        message: "The group already exists",
-        code: 409,
-      };
-    }
-
-    const createdGroup = await groupsModel.createGroup(newGroup);
-
-    return {
-      newGroup: createdGroup,
-      success: true,
-      message: "Group created successfully",
-      code: 201,
-    };
-  };
-
   const getById = (id) => {
     return groupsModel.getById(id);
+  };
+
+  const createGroup = async (newGroup) => {
+    const { name } = newGroup;
+    const groupFound = await groupsModel.findByName(name);
+    if (groupFound) {
+      throw new ConflictException("the group already exists");
+    }
+    return groupsModel.createGroup(newGroup);
   };
 
   const deleteById = (id) => {
     return groupsModel.deleteById(id);
   };
 
-  const updateGroup = (id, value) => {
+  const updateGroup = async (id, value) => {
+    const groupFound = await groupsModel.getById(id);
+
+    if (!groupFound) {
+      throw new NotFoundException(`group with id: ${id} not found`);
+    }
     return groupsModel.updateGroup(id, value);
   };
+
   return {
     getGroups,
     createGroup,

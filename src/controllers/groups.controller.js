@@ -1,97 +1,109 @@
+import { StatusCodes } from "http-status-codes";
 import { GroupsService } from "../services/groups.service.js";
+import groupsSchemaValidation from "../validations/groups.schema.validation.js";
 
 const GroupsController = () => {
   const groupsService = GroupsService();
 
   const getGroups = async (_req, res) => {
-    const groups = await groupsService.getGroups();
-    return res.status(200).json({
-      groups,
-    });
+    try {
+      const groups = await groupsService.getGroups();
+      return res.status(StatusCodes.OK).json({
+        groups,
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error.message);
+    }
   };
 
   const getById = async (req, res) => {
-    const group = await groupsService.getById(req.params.id);
+    try {
+      const group = await groupsService.getById(req.params.id);
 
-    if (!group) {
-      return res
-        .status(404)
-        .json({ message: `Group with id ${req.params.id} does not exist` });
+      if (!group) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+          message: `Group with id ${req.params.id} does not exist`,
+        });
+      }
+
+      return res.status(StatusCodes.OK).json({
+        group,
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error.message);
     }
-
-    return res.status(200).json({
-      group,
-    });
   };
 
   const createGroup = async (req, res) => {
-    const { name, color } = req.body;
-    // validations -------
-    if (!name || !color) {
-      return res.status(400).json({ message: "the field is missing" });
-    }
+    const { error, value } = groupsSchemaValidation.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
 
-    if (typeof name != "string") {
-      return res.status(400).json({
-        message: "the field should be a string",
+    if (error) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.details[0].message,
       });
     }
-
-    if (!name.trim()) {
-      return res.status(400).json({
-        message: "the field can not be  empty",
-      });
-    }
-
-    if (typeof color != "string") {
-      return res.status(400).json({
-        message: "the field should be a string",
-      });
-    }
-
-    if (!color.trim()) {
-      return res.status(400).json({
-        message: "the field can not be  empty",
-      });
-    }
-
-    //-----------------------------
 
     const sanitizedBody = {
-      name: name.trim(),
-      color: color.trim(),
+      ...value,
       ownerUserId: 1,
     };
 
-    const { newGroup, success, message, code } =
-      await groupsService.createGroup(sanitizedBody);
-
-    if (success) {
-      return res.status(code).json(newGroup);
-    } else {
-      return res.status(code).json(message);
+    try {
+      const group = await groupsService.createGroup(sanitizedBody);
+      if (group) {
+        return res.status(StatusCodes.CREATED).json(group);
+      } else {
+        return res.status(StatusCodes.CONFLICT).json("an error ocurred");
+      }
+    } catch (error) {
+      return res
+        .status(error.StatusCodes || StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(error.message);
     }
   };
 
   const deleteById = async (req, res) => {
-    const removed = await groupsService.deleteById(req.params.id);
-
-    if (removed) {
-      return res.status(204).send();
+    try {
+      const removed = await groupsService.deleteById(req.params.id);
+      if (removed) {
+        return res.status(StatusCodes.NO_CONTENT).send();
+      }
+      return res.status(StatusCodes.NOT_FOUND).json({
+        message: `Group with id ${req.params.id} does not exist`,
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error.message);
     }
-
-    return res.status(404).json({
-      message: `Group with id ${req.params.id} does not exist`,
-    });
   };
 
   const updateGroup = async (req, res) => {
-    const removed = await groupsService.updateGroup(req.params.id, req.body);
+    const { error, value } = groupsSchemaValidation.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
 
-    if (removed) {
-      return res.status(200).json({ removed });
-    } else {
-      return res.status(402).json({ message: `an error ocurred` });
+    if (error) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.details[0].message,
+      });
+    }
+
+    try {
+      const groupEdited = await groupsService.updateGroup(req.params.id, value);
+      if (groupEdited) {
+        return res.status(StatusCodes.OK).json({ groupEdited });
+      } else {
+        return res
+          .status(StatusCodes.CONFLICT)
+          .json({ message: `an error ocurred` });
+      }
+    } catch (error) {
+      return res
+        .status(error.StatusCodes || StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(error.message);
     }
   };
 

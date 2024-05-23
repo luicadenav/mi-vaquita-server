@@ -50,7 +50,6 @@ const UsersModel = () => {
       "UPDATE users SET name = $1 , password = $2 WHERE id =  $3 RETURNING * ",
       [value.name, value.password, id]
     );
-    console.log("🚀 ~ editUserById ~ res:", res);
     client.release();
     return res.rows[0];
   };
