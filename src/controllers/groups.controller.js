@@ -1,13 +1,26 @@
 import { StatusCodes } from "http-status-codes";
 import { GroupsService } from "../services/groups.service.js";
-import groupsSchemaValidation from "../validations/groups.schema.validation.js";
+import {
+  GroupSchema,
+  queryGroupSchema,
+} from "../validations/groups.schema.validation.js";
 
 const GroupsController = () => {
   const groupsService = GroupsService();
 
-  const getGroups = async (_req, res) => {
+  const getGroups = async (req, res) => {
+    const { error, value } = queryGroupSchema.validate(req.query, {
+      abortEarly: false,
+    });
+
+    if (error) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.details[0].message,
+      });
+    }
+
     try {
-      const groups = await groupsService.getGroups();
+      const groups = await groupsService.getGroups(value);
       return res.status(StatusCodes.OK).json({
         groups,
       });
@@ -35,7 +48,7 @@ const GroupsController = () => {
   };
 
   const createGroup = async (req, res) => {
-    const { error, value } = groupsSchemaValidation.validate(req.body, {
+    const { error, value } = GroupSchema.validate(req.body, {
       abortEarly: false,
       stripUnknown: true,
     });
@@ -80,7 +93,7 @@ const GroupsController = () => {
   };
 
   const updateGroup = async (req, res) => {
-    const { error, value } = groupsSchemaValidation.validate(req.body, {
+    const { error, value } = createGroupSchema.validate(req.body, {
       abortEarly: false,
       stripUnknown: true,
     });

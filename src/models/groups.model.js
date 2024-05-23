@@ -1,9 +1,11 @@
 import connection from "../lib/connection.js";
 
 const Model = () => {
-  const getGroups = async () => {
+  const getGroups = async (value) => {
     const client = await connection.connect();
-    const res = await client.query("SELECT * from groups");
+    const sort = value.sort;
+    const query = `SELECT * FROM groups ORDER BY createdAt ${sort}`;
+    const res = await client.query(query);
     client.release();
     return res.rows;
   };

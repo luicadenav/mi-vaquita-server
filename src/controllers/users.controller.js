@@ -1,32 +1,43 @@
 import { UsersService } from "../services/users.service.js";
-import usersSchemaValidation from "../validations/users.schema.validation.js";
+import {
+  createUserSchema,
+  updateUserSchema,
+} from "../validations/users.schema.validation.js";
 import { StatusCodes } from "http-status-codes";
 
 const UsersController = () => {
   const usersService = UsersService();
 
   const getUsers = async (_req, res) => {
-    const users = await usersService.getUsers();
-    return res.status(StatusCodes.OK).json({
-      users,
-    });
+    try {
+      const users = await usersService.getUsers();
+      return res.status(StatusCodes.OK).json({
+        users,
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error.message);
+    }
   };
 
   const getUserById = async (req, res) => {
-    const user = await usersService.getUserById(req.params.id);
-    if (!user) {
-      return res.status(StatusCodes.NOT_FOUND).json({
-        message: `Group with id ${req.params.id} does not exist`,
-      });
-    }
+    try {
+      const user = await usersService.getUserById(req.params.id);
+      if (!user) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+          message: `Group with id ${req.params.id} does not exist`,
+        });
+      }
 
-    return res.status(StatusCodes.OK).json({
-      user,
-    });
+      return res.status(StatusCodes.OK).json({
+        user,
+      });
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error.message);
+    }
   };
 
   const createUser = async (req, res) => {
-    const { error, value } = usersSchemaValidation.validate(req.body, {
+    const { error, value } = createUserSchema.validate(req.body, {
       abortEarly: false,
       stripUnknown: true,
     });
@@ -47,23 +58,34 @@ const UsersController = () => {
   };
 
   const deleteUserById = async (req, res) => {
-    const isRemoved = await usersService.deleteUserById(req.params.id);
-    if (!isRemoved) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: `user with id ${req.params.id} does not exist` });
+    try {
+      const isRemoved = await usersService.deleteUserById(req.params.id);
+
+      if (!isRemoved) {
+        return res
+          .status(StatusCodes.NOT_FOUND)
+          .json({ message: `user with id ${req.params.id} does not exist` });
+      }
+      return res.status(StatusCodes.NO_CONTENT).send();
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error.message);
     }
-    return res.status(StatusCodes.NO_CONTENT).send();
   };
 
   const editUserById = async (req, res) => {
-    // validaciones con joi!!!!!
+    const { error, value } = updateUserSchema.validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+
+    if (error) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: error.details[0].message,
+      });
+    }
 
     try {
-      const userEdited = await usersService.editUserById(
-        req.params.id,
-        req.body
-      );
+      const userEdited = await usersService.editUserById(req.params.id, value);
       if (userEdited) {
         return res.status(StatusCodes.OK).json({ userEdited });
       } else {

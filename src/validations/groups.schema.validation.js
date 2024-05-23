@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const schema = Joi.object({
+const GroupSchema = Joi.object({
   name: Joi.string().min(1).trim().max(30).required(),
   color: Joi.string()
     .min(4)
@@ -10,4 +10,9 @@ const schema = Joi.object({
     .required(),
   id: Joi.string().strip().pattern(new RegExp("^[0-9]+$")),
 });
-export default schema;
+
+const queryGroupSchema = Joi.object({
+  sort: Joi.string().valid("ASC", "DESC").default("DESC"),
+});
+
+export { GroupSchema, queryGroupSchema };
