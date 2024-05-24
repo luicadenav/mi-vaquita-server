@@ -1,4 +1,5 @@
 import connection from "../lib/connection.js";
+import bcrypt from "bcrypt";
 
 const UsersModel = () => {
   const getUsers = async () => {
@@ -28,7 +29,8 @@ const UsersModel = () => {
 
   const createUser = async (newUser) => {
     const client = await connection.connect();
-    const { name, email, password } = newUser;
+    let { name, email, password } = newUser;
+    password = await bcrypt.hash(password, 10);
     const res = await client.query(
       "INSERT INTO Users (name, email, password, createdat) VALUES ($1, $2, $3,NOW()) RETURNING *",
       [name, email, password]

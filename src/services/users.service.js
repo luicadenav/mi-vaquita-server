@@ -34,12 +34,17 @@ const UsersService = () => {
     return usersModel.editUserById(id, value);
   };
 
+  const findUserByEmail = (email) => {
+    return usersModel.findUserByEmail(email);
+  };
+
   return {
     getUsers,
     createUser,
     getUserById,
     deleteUserById,
     editUserById,
+    findUserByEmail,
   };
 };
 export { UsersService };
