@@ -11,10 +11,12 @@ passport.use(
   new Strategy(options, async function (jwt_payload, done) {
     try {
       const user = await UsersModel().getUserById(jwt_payload.id);
+
       delete user.password;
       delete user.createdat;
+
       if (user) {
-        return done(null, user);
+        return done(null, user); //here return user in inside request!!
       } else {
         return done(null, false);
       }

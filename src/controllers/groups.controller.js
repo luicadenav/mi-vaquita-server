@@ -61,7 +61,7 @@ const GroupsController = () => {
 
     const sanitizedBody = {
       ...value,
-      ownerUserId: 1,
+      ownerUserId: req.user.id,
     };
 
     try {
