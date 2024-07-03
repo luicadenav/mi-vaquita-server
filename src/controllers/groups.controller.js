@@ -20,7 +20,7 @@ const GroupsController = () => {
     }
 
     try {
-      const groups = await groupsService.getGroups(value);
+      const groups = await groupsService.getGroups(req.user.id, value);
       return res.status(StatusCodes.OK).json({
         groups,
       });

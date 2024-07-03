@@ -6,7 +6,7 @@ const pathsNoAuth = [
     method: "POST",
   },
   {
-    path: "/users",
+    path: "/users/",
     method: "POST",
   },
 ];

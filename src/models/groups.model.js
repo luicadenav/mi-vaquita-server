@@ -1,10 +1,10 @@
 import connection from "../lib/connection.js";
 
 const Model = () => {
-  const getGroups = async (value) => {
+  const getGroups = async (id, value) => {
     const client = await connection.connect();
     const sort = value.sort;
-    const query = `SELECT * FROM groups ORDER BY createdAt ${sort}`;
+    const query = `SELECT * FROM groups  WHERE  ownerUserId=${id} ORDER BY createdAt ${sort}`;
     const res = await client.query(query);
     client.release();
     return res.rows;

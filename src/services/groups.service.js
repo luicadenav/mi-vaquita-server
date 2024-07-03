@@ -5,8 +5,8 @@ import NotFoundException from "../exceptions/not-found.exception.js";
 const GroupsService = () => {
   const groupsModel = Model();
 
-  const getGroups = (value) => {
-    return groupsModel.getGroups(value);
+  const getGroups = (id, value) => {
+    return groupsModel.getGroups(id, value);
   };
 
   const getById = (id) => {

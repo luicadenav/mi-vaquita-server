@@ -7,21 +7,35 @@ const AuthController = () => {
   const userService = UsersService();
 
   const login = async (req, res) => {
-    const { email, password } = req.body;
-    const user = await userService.findUserByEmail(email);
-    const isValidToken = await bcrypt.compare(password, user.password);
+    try {
+      const { email, password } = req.body;
 
-    if (!user || !isValidToken) {
+      const user = await userService.findUserByEmail(email);
+      if (!user) {
+        return res
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ message: "invalid credentials" });
+      }
+
+      const isValidToken = await bcrypt.compare(password, user.password);
+
+      if (!isValidToken) {
+        return res
+          .status(StatusCodes.UNAUTHORIZED)
+          .json({ message: "invalid credentials" });
+      }
+      const payload = { id: user.id };
+      const token = jwt.sign(payload, process.env.JWT_SECRET);
+      res.status(StatusCodes.OK).json({ token });
+    } catch (error) {
       return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json({ message: "invalid credentials" });
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json(error.message || error.code);
     }
-    const payload = { id: user.id };
-    const token = jwt.sign(payload, process.env.JWT_SECRET);
-    res.status(StatusCodes.OK).json({ token });
   };
+
   return {
-    login,
+    login
   };
 };
 export { AuthController };
