@@ -4,7 +4,7 @@ const Model = () => {
   const getGroups = async (id, value) => {
     const client = await connection.connect();
     const sort = value.sort;
-    const query = `SELECT * FROM groups  WHERE  ownerUserId=${id} ORDER BY createdAt ${sort}`;
+    const query = `SELECT * FROM groups  WHERE  owner_user_id=${id} ORDER BY created_at ${sort}`;
     const res = await client.query(query);
     client.release();
     return res.rows;
@@ -13,7 +13,7 @@ const Model = () => {
   const createGroup = async (entity) => {
     const client = await connection.connect();
     const res = await client.query(
-      "INSERT INTO Groups ( name, color, ownerUserId, createdAt) VALUES ( $1, $2 , $3, NOW()) RETURNING *",
+      "INSERT INTO Groups ( name, color, owner_user_id, created_at) VALUES ( $1, $2 , $3, NOW()) RETURNING *",
       [entity.name, entity.color, entity.ownerUserId]
     );
     client.release();

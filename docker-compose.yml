@@ -1,0 +1,21 @@
+version: "3.3"
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=vaquita
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=lpolpo0ok0ok
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=correoprueba0721@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    ports:
+      - 5050:80

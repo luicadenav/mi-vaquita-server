@@ -93,7 +93,7 @@ const GroupsController = () => {
   };
 
   const updateGroup = async (req, res) => {
-    const { error, value } = createGroupSchema.validate(req.body, {
+    const { error, value } = GroupSchema.validate(req.body, {
       abortEarly: false,
       stripUnknown: true,
     });

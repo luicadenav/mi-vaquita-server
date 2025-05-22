@@ -16,3 +16,5 @@ yarn.lock
 # Ignore dist directories or built output
 dist/
 build/
+
+postgres_data
